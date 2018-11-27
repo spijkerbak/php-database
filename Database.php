@@ -6,13 +6,12 @@ require_once 'Result.php';
 class Database extends PDO {
 
     public function __construct() {
+        global $dbconnect;
         try {
-            $host = 'localhost';
-            $dbname = 'beauty';
-//            $user = 'Marcia';
-//            $pass = 'xxx';
-            $user = 'root';
-            $pass = '';
+            $host = $dbconnect['hostname'];
+            $dbname = $dbconnect['database'];
+            $user = $dbconnect['username'];
+            $pass = $dbconnect['password'];
 
             $dsn = "mysql:dbname=$dbname;host=$host;charset=utf8"; // no hyphen in utf8
             parent::__construct($dsn, $user, $pass, null);
