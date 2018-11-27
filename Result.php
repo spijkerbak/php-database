@@ -1,31 +1,33 @@
 <?php
 
-namespace database;
+class Result {
 
-// ----- IMPORTANT ------
-// look in https://secure.php.net/manual/en/book.pdo.php for extending PDOStatement
-class Result extends \PDOStatement {
+    private $class;
+    private $stmt;
 
-    public $dbh;
-
-    protected function __construct($dbh) {
-        $this->dbh = $dbh;
+    private function trace($i) {
+        $t = debug_backtrace()[$i];
+        echo $t['file'] . '(' . $t['line'] . ')<br>';
     }
 
-    /*
-     * 
-     * throws \PDOException
-     */
-
-    public function execute($args = null, $errmsg = "Database error...") {
-        if ($args === null) {
-            return parent::execute();
-        } else {
-            if (!is_array($args)) {
-                $args = [$args];
-            }
-            return parent::execute($args);
+    function __construct($class, $stmt) {
+        $stclass = get_class($stmt);
+        if ($stclass !== 'PDOStatement') {
+            echo "\nTrying to create Result from {$stclass}<br>\n";
+            $this->trace(1);
+            $this->trace(2);
         }
+        $this->class = $class;
+        $this->stmt = $stmt;
+    }
+
+    function fetch() {
+        if ($this->stmt == null) {
+            return null;
+        }
+        $this->stmt->setFetchMode(PDO::FETCH_CLASS, $this->class);
+        $result = $this->stmt->fetch();
+        return $result !== false ? $result : null;
     }
 
 }
