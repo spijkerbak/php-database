@@ -1,4 +1,5 @@
 <?php
+
 namespace database;
 
 use PDO;
@@ -10,10 +11,10 @@ require_once 'Record.php';
 set_error_handler(function($errno, $errstr, $errfile, $errline ) {
     //throw new ErrorException($errstr, $errno, 0, $errfile, $errline);
     // IGNORE warning from mail() about logging
-    
+
     header('Content-type: text.html');
     echo "ERROR HANDLER:<br>\n";
-    
+
     if (stripos($errstr, 'phpmaillog') !== false) {
         return;
     }
@@ -43,10 +44,6 @@ class Database extends PDO {
     private $dbname;
     private $admin;
     private $prefix;
-    private $_hostname = 'db.spijkerman.nl';
-    private $_databasename = 'md136282db440445';
-    private $_username = 'md136282db440445';
-    private $_password = 'NoGetNoSet';
 
     public function hasTable($tableName) {
         try {
@@ -59,11 +56,11 @@ class Database extends PDO {
         return true;
     }
 
-    public function __construct() {
-        $host = $this->_hostname;
-        $dbname = $this->_databasename;
-        $user = $this->_username;
-        $pass = $this->_password;
+    public function __construct($host, $dbname, $user, $pass) {
+        //$host = $this->_hostname;
+        //$dbname = $this->_databasename;
+        //$user = $this->_username;
+        //$pass = $this->_password;
         $this->admin = "https://phpmyadmin-mdh.mijndomein.nl/;$host;$user;$pass";
         $this->prefix = strtoupper(BASE) . '_';
         try {
@@ -207,30 +204,38 @@ class Database extends PDO {
         ini_set('display_errors', 1);
         ini_set('display_startup_errors', 1);
         $errRep = error_reporting(E_ALL);
-        
+
         $host = $this->_hostname;
         $dbname = $this->_databasename;
         $user = $this->_username;
         $pass = $this->_password;
         $filename = '/dump_' . today() . '_' . timetext('', '.') . '.sql';
-        
+
         $sqlout = dirname(__FILE__) . $filename;
         $stderr = '';
-        
+
         // get names of  tables for this applictation
-        
+
         $tableNameList = $this->getColumn("SHOW TABLES LIKE '{$this->prefix}_%'");
         $tableNames = implode(' ', $tableNameList);
-        
+
         exec("mysqldump --user={$user} --password={$pass} --host={$host} {$dbname} {$tableNames} --result-file={$sqlout} 2>&1", $stderr);
-        if(!empty($stderr)) {
+        if (!empty($stderr)) {
             var_dump($stderr);
         }
         $list = str_replace(' ', '<br>', $tableNames);
         echo "<h3>Dumped tables</h3>\n";
         echo "<p>$list</p>";
         error_reporting($errRep);
-        
+
         return $destfolder . '/' . $filename;
     }
+
 }
+
+//$db = new database\Database('db.spijkerman.nl', 'md136282db440445', 'md136282db440445', 'NoGetNoSet');
+//
+//function db() {
+//    global $db;
+//    return $db;
+//}

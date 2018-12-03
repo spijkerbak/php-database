@@ -5,10 +5,10 @@ namespace database;
 require_once 'Field.php';
 
 abstract class Record {
-    private $key; // keep original primary key, so primary key may be changed
 
+    private $key; // keep original primary key, so primary key may be changed
     // static fields don't seem to be inherited, so we use static::class as index
-    
+
     protected static $tableName = [];
     protected static $allFields = [];
     protected static $listFields = [];
@@ -19,6 +19,7 @@ abstract class Record {
     static function setAccess($canList, $canEdit) {
         
     }
+
     static function setTableName($tableName) {
         static::$tableName[static::class] = $tableName;
     }
@@ -66,9 +67,9 @@ abstract class Record {
     static function getLookup() {
         $table = static::$tableName[static::class];
         $lookup = static::$lookup[static::class];
-        $left =  $lookup[0];
+        $left = $lookup[0];
         $right = $lookup[1];
-        if(array_key_exists($right, static::$allFields)) {
+        if (array_key_exists($right, static::$allFields)) {
             $right = "`{$right}`";
         }
         $sql = "SELECT `{$left}`, {$right} FROM [{$table}] ORDER BY `{$left}`";
@@ -76,7 +77,7 @@ abstract class Record {
     }
 
     function __construct() {
-    // add fields not set by database 'pre-constructor'
+        // add fields not set by database 'pre-constructor'
         foreach (static::getFields() as $name => $field) {
             if (!isset($this->$name)) {
                 $this->$name = null;
@@ -106,7 +107,7 @@ abstract class Record {
         $val = [];
         foreach ($this->getFields() as $name => $field) {
             if ($field->type & Field::PK) {
-                $val[] = "{$name}={$this->$name}";
+                $val[] = "{$name}='{$this->$name}'";
             }
         }
         return implode($glue, $val);
@@ -126,8 +127,17 @@ abstract class Record {
         return $sql;
     }
 
+    static function getBy($key) {
+        $table = static::getTableName();
+        $sql = 'SELECT * FROM [' . $table . '] WHERE ' . $key;
+        return db()->getObject(static::class, $sql);
+    }
+
     static function get($key) {
         $table = static::getTableName();
+        if(is_object($key)) {
+            $key = (array)$key;
+        }
         if (!is_array($key)) {
             $key = ['ID' => $key];
         }
