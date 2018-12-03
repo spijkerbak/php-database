@@ -56,13 +56,13 @@ class Database extends PDO {
         return true;
     }
 
-    public function __construct($host, $dbname, $user, $pass) {
-        //$host = $this->_hostname;
-        //$dbname = $this->_databasename;
-        //$user = $this->_username;
-        //$pass = $this->_password;
+    public function __construct($host, $dbname, $user, $pass, $prefix = null) {
         $this->admin = "https://phpmyadmin-mdh.mijndomein.nl/;$host;$user;$pass";
-        $this->prefix = strtoupper(BASE) . '_';
+        if($prefix !== null) {
+            $this->prefix = $prefix;
+        } else {
+            $this->prefix = strtoupper(BASE) . '_';
+        }
         try {
             $dsn = "mysql:dbname=$dbname;host=$host;charset=utf8"; // no hyphen in utf8
             parent::__construct($dsn, $user, $pass, null);
