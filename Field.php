@@ -5,7 +5,8 @@ class Field {
 
     // non numbers
     const STRING = 1;
-    const DATE = 2;
+    const TEXT = 2;
+    const DATE = 3;
     
     // numbers
     const NUMERIC = 128; // flag

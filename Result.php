@@ -17,7 +17,7 @@ class Result extends \PDOStatement {
      * throws \PDOException
      */
 
-    public function execute($args = null, $errmsg = "Database error...") {
+    public function execute($args = null) {
         if ($args === null) {
             return parent::execute();
         } else {
