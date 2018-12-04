@@ -24,6 +24,7 @@ class Field {
     public $type;
     public $width;
     public $label;
+    public $class;
 
     function __construct($type, $param = null, $class = '') {
         $this->type = $type;

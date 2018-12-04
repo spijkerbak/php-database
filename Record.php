@@ -88,7 +88,6 @@ abstract class Record {
     }
 
     protected function afterSet() {
-        
     }
 
     public function getKey() {
@@ -215,8 +214,9 @@ abstract class Record {
 
     public function delete() {
         $table = static::getTableName();
-        $sql = "DELETE FROM [{$table}] WHERE `ID` = ?";
-        db()->execute($sql, [$this->ID], TXT("Can not delete, there are relations"));
+        $sql = "DELETE FROM [{$table}] ";
+        $sql .= self::makeWhere($this->getKey(), $args);
+        db()->execute($sql, $args);
     }
 
     public function insert() {
