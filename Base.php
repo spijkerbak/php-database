@@ -1,5 +1,4 @@
 <?php
-
 if (!defined('BASE')) {
     $__p = explode('/', $_SERVER['PHP_SELF']);
     define('BASE', "{$__p[1]}");
